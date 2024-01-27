@@ -22,10 +22,17 @@ import FormError from "../form-error";
 import FormSuccess from "../form-success";
 import { login } from "@/actions/login";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const Loginform = () => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider!"
+      : "";
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -39,8 +46,9 @@ const Loginform = () => {
     setError("");
     setSuccess("");
     login(values).then((value) => {
-      setError(value.error);
-      setSuccess(value.success);
+      setError(value?.error);
+      //Will do after 2F auth setup.
+      // setSuccess(value?.success);
     });
   };
   return (
@@ -86,7 +94,7 @@ const Loginform = () => {
                 );
               }}
             />
-            <FormError message={error} />
+            <FormError message={error || urlError} />
             <FormSuccess message={success} />
             <Button type="submit" className="w-full">
               Login

@@ -5,6 +5,8 @@ const Settings = async () => {
 
   return (
     <div>
+      {JSON.stringify(session)}
+
       <form
         action={async () => {
           "use server";

@@ -25,6 +25,22 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      await db.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          emailVerified: new Date(),
+        },
+      });
+    },
+  },
   callbacks: {
     //next js issue for token --
     session({ token, session }) {
@@ -51,5 +67,6 @@ export const {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+
   ...authConfig,
 });
