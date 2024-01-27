@@ -48,7 +48,7 @@ const Loginform = () => {
     login(values).then((value) => {
       setError(value?.error);
       //Will do after 2F auth setup.
-      // setSuccess(value?.success);
+      setSuccess(value?.success);
     });
   };
   return (
