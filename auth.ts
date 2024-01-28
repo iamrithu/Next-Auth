@@ -5,6 +5,7 @@ import authConfig from "@/auth.config";
 import { db } from "@/lib/db";
 import { getUserById } from "@/data/user";
 import { DateTime } from "next-auth/providers/kakao";
+import { getTowfactorconfirmationByUserId } from "./data/two-factor-confirmation";
 
 declare module "next-auth" {
   interface Session {
@@ -46,6 +47,19 @@ export const {
       if (account?.provider !== "credentials") return true;
       const existingUser = await getUserById(user?.id!);
       if (!existingUser?.emailVerified) return false;
+
+      if (existingUser.isTwoFactorEnable) {
+        const twoFactorConfirmation = await getTowfactorconfirmationByUserId(
+          existingUser.id
+        );
+        if (!twoFactorConfirmation) return false;
+
+        await db.twoFactorConfirmation.delete({
+          where: {
+            id: twoFactorConfirmation.id,
+          },
+        });
+      }
       return true;
     },
     //next js issue for token --
